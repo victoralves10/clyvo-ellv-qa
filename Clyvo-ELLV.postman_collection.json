@@ -1,0 +1,576 @@
+{
+  "info": {
+    "name": "Clyvo ELLV - Testes automatizados da API",
+    "description": "Testes de integração da API do Clyvo ELLV (backend publicado no Render).\nRodar em ordem pelo Collection Runner: o login salva o token e a criação salva o id da consulta.\nDados controlados: usuário dev@clyvovet.dev / dev123456 e paciente Thor (dados de demonstração).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CT01 - API e banco no ar",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Objetivo: confirmar que a API publicada e o banco Oracle respondem.\nEntrada: nenhuma.\nSaída esperada: 200 com {status: 'ok', banco: true}.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"API ok e banco conectado\", () => {",
+              "    const corpo = pm.response.json();",
+              "    pm.expect(corpo.status).to.eql(\"ok\");",
+              "    pm.expect(corpo.banco).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT02 - Login com senha errada",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Objetivo: o sistema recusa credenciais inválidas.\nEntrada: e-mail dev@clyvovet.dev, senha 'senhaErrada1'.\nSaída esperada: 401 com a mensagem 'E-mail ou senha incorretos.'",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"senha\": \"senhaErrada1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+              "pm.test(\"Mensagem de erro do backend\", () => {",
+              "    pm.expect(pm.response.json().error).to.eql(\"E-mail ou senha incorretos.\");",
+              "});",
+              "pm.test(\"Não devolve token\", () => {",
+              "    pm.expect(pm.response.json().token).to.be.undefined;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT03 - Cadastro com senha fraca",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/cadastro",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "cadastro"
+          ]
+        },
+        "description": "Objetivo: o sistema aplica a política de senha forte.\nEntrada: nome 'Teste QA', e-mail qa.senhafraca@clyvo.dev, senha '123'.\nSaída esperada: 400, campo 'senha' e a regra de senha.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Teste QA\",\n  \"email\": \"qa.senhafraca@clyvo.dev\",\n  \"senha\": \"123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"Aponta o campo senha\", () => {",
+              "    pm.expect(pm.response.json().campo).to.eql(\"senha\");",
+              "});",
+              "pm.test(\"Explica a regra da senha\", () => {",
+              "    pm.expect(pm.response.json().error).to.include(\"mínimo 8 caracteres\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT04 - Login válido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Objetivo: o usuário de teste entra no sistema.\nEntrada: e-mail dev@clyvovet.dev, senha dev123456.\nSaída esperada: 200, token JWT e usuário com o mesmo e-mail. O token é salvo para os próximos testes.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"senha\": \"{{senha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "const corpo = pm.response.json();",
+              "pm.test(\"Devolve o token\", () => pm.expect(corpo.token).to.be.a(\"string\").and.not.empty);",
+              "pm.test(\"Usuário certo\", () => pm.expect(corpo.usuario.email_usuario).to.eql(pm.collectionVariables.get(\"email\")));",
+              "pm.collectionVariables.set(\"token\", corpo.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT05 - Rota protegida sem token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/consultas/agendadas",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas",
+            "agendadas"
+          ]
+        },
+        "description": "Objetivo: dados do veterinário só com login.\nEntrada: requisição sem token.\nSaída esperada: 401.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+              "pm.test(\"Mensagem de sessão\", () => pm.expect(pm.response.json().error).to.be.a(\"string\").and.not.empty);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT06 - Buscar paciente Thor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/pacientes?busca=Thor",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "pacientes"
+          ],
+          "query": [
+            {
+              "key": "busca",
+              "value": "Thor"
+            }
+          ]
+        },
+        "description": "Objetivo: a busca de pacientes encontra o animal pelo nome.\nEntrada: busca = 'Thor'.\nSaída esperada: 200, lista com o Thor (Cachorro, Pastor Alemão). O id é salvo para criar a consulta.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "const lista = pm.response.json();",
+              "const thor = lista.find((p) => p.nm_animal === \"Thor\");",
+              "pm.test(\"Encontrou o Thor\", () => pm.expect(thor).to.not.be.undefined);",
+              "pm.test(\"Espécie e raça certas\", () => {",
+              "    pm.expect(thor.especie_animal).to.eql(\"Cachorro\");",
+              "    pm.expect(thor.raca_animal_exibicao).to.eql(\"Pastor Alemão\");",
+              "});",
+              "pm.collectionVariables.set(\"id_animal\", thor.id_animal);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT07 - Criar consulta para o Thor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/consultas",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas"
+          ]
+        },
+        "description": "Objetivo: agendar uma consulta para um paciente já cadastrado (caso 1).\nEntrada: motivo 'Teste automatizado - vacina', data = amanhã, horário 10:00, paciente = Thor.\nSaída esperada: 201, status 'Agendado', data formatada e 2 lembretes (antes e na hora).",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"consulta\": {\n    \"historico_consulta\": \"Teste automatizado - vacina\",\n    \"dt_consulta\": \"{{data_amanha}}\",\n    \"hr_consulta\": \"10:00\",\n    \"st_consulta\": \"Agendado\"\n  },\n  \"paciente\": {\n    \"id_animal\": {{id_animal}}\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// data de amanhã no formato AAAA-MM-DD",
+              "const amanha = new Date(Date.now() + 24 * 60 * 60 * 1000);",
+              "pm.collectionVariables.set(\"data_amanha\", amanha.toISOString().slice(0, 10));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+              "const corpo = pm.response.json();",
+              "pm.test(\"Mensagem de sucesso\", () => pm.expect(corpo.mensagem).to.include(\"Consulta criada com sucesso\"));",
+              "pm.test(\"Consulta agendada para o Thor\", () => {",
+              "    pm.expect(corpo.consulta.st_consulta).to.eql(\"Agendado\");",
+              "    pm.expect(corpo.consulta.animal.nm_animal).to.eql(\"Thor\");",
+              "    pm.expect(corpo.consulta.hr_consulta).to.eql(\"10:00\");",
+              "});",
+              "pm.test(\"Lembretes gerados (antes e na hora)\", () => {",
+              "    pm.expect(corpo.lembretes.map((l) => l.tipo)).to.have.members([\"antes\", \"inicio\"]);",
+              "});",
+              "pm.collectionVariables.set(\"id_consulta\", corpo.consulta.id_consulta);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT08 - Consulta aparece em Agendadas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/consultas/agendadas?busca=Thor",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas",
+            "agendadas"
+          ],
+          "query": [
+            {
+              "key": "busca",
+              "value": "Thor"
+            }
+          ]
+        },
+        "description": "Objetivo: a consulta criada aparece na lista de agendadas.\nEntrada: busca = 'Thor'.\nSaída esperada: 200 e a consulta criada no CT07 na lista.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Consulta criada está na lista\", () => {",
+              "    const ids = pm.response.json().map((c) => c.id_consulta);",
+              "    pm.expect(ids).to.include(Number(pm.collectionVariables.get(\"id_consulta\")));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT09 - Concluir consulta",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/consultas/{{id_consulta}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas",
+            "{{id_consulta}}"
+          ]
+        },
+        "description": "Objetivo: marcar a consulta como realizada, com diagnóstico.\nEntrada: status 'Concluido', diagnóstico 'Cinomose'.\nSaída esperada: 200, status 'Concluido', diagnóstico salvo e nenhum lembrete.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"historico_consulta\": \"Teste automatizado - vacina\",\n  \"dt_consulta\": \"{{data_amanha}}\",\n  \"hr_consulta\": \"10:00\",\n  \"st_consulta\": \"Concluido\",\n  \"ds_doenca\": \"Cinomose\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "const corpo = pm.response.json();",
+              "pm.test(\"Consulta concluída com diagnóstico\", () => {",
+              "    pm.expect(corpo.consulta.st_consulta).to.eql(\"Concluido\");",
+              "    pm.expect(corpo.consulta.ds_doenca).to.eql(\"Cinomose\");",
+              "});",
+              "pm.test(\"Sem lembretes para consulta concluída\", () => pm.expect(corpo.lembretes).to.be.an(\"array\").that.is.empty);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT10 - Remover consulta",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/consultas/{{id_consulta}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas",
+            "{{id_consulta}}"
+          ]
+        },
+        "description": "Objetivo: remover a consulta criada pelo teste (deixa o banco como estava).\nEntrada: id da consulta do CT07.\nSaída esperada: 200 com a mensagem de remoção.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Mensagem de remoção\", () => pm.expect(pm.response.json().mensagem).to.include(\"Consulta removida\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CT11 - Consulta removida não existe mais",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/consultas/{{id_consulta}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "consultas",
+            "{{id_consulta}}"
+          ]
+        },
+        "description": "Objetivo: confirmar que a remoção foi real.\nEntrada: id da consulta removida.\nSaída esperada: 404 'Consulta não encontrada.'",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+              "pm.test(\"Mensagem\", () => pm.expect(pm.response.json().error).to.eql(\"Consulta não encontrada.\"));"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api-clyvo-node.onrender.com"
+    },
+    {
+      "key": "email",
+      "value": "dev@clyvovet.dev"
+    },
+    {
+      "key": "senha",
+      "value": "dev123456"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "id_animal",
+      "value": ""
+    },
+    {
+      "key": "id_consulta",
+      "value": ""
+    },
+    {
+      "key": "data_amanha",
+      "value": ""
+    }
+  ]
+}

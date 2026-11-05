@@ -1,0 +1,471 @@
+{
+	"id": "ec38c479-8d95-485d-bcdb-7c054453e129",
+	"name": "Clyvo ELLV - Testes automatizados da API",
+	"timestamp": "2026-11-05T00:21:51.594Z",
+	"collection_id": "59572823-9b0ae717-f5e6-4e3e-9e8e-69f2a6c51870",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 29,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-11-05T00:21:46.169Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "855bab5a-d2f7-476d-962b-e7560eb69bca",
+			"name": "CT01 - API e banco no ar",
+			"url": "https://api-clyvo-node.onrender.com/health",
+			"time": 682,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"API ok e banco conectado": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"API ok e banco conectado": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				682
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"API ok e banco conectado": true
+				}
+			]
+		},
+		{
+			"id": "31804681-797b-4de7-a92f-5ecdf02c517a",
+			"name": "CT02 - Login com senha errada",
+			"url": "https://api-clyvo-node.onrender.com/auth/login",
+			"time": 564,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status 401": true,
+				"Mensagem de erro do backend": true,
+				"Não devolve token": true
+			},
+			"testPassFailCounts": {
+				"Status 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensagem de erro do backend": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Não devolve token": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				564
+			],
+			"allTests": [
+				{
+					"Status 401": true,
+					"Mensagem de erro do backend": true,
+					"Não devolve token": true
+				}
+			]
+		},
+		{
+			"id": "1eb6b0c3-dca1-4d08-8c11-fd493bc473bd",
+			"name": "CT03 - Cadastro com senha fraca",
+			"url": "https://api-clyvo-node.onrender.com/auth/cadastro",
+			"time": 161,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status 400": true,
+				"Aponta o campo senha": true,
+				"Explica a regra da senha": true
+			},
+			"testPassFailCounts": {
+				"Status 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Aponta o campo senha": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Explica a regra da senha": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				161
+			],
+			"allTests": [
+				{
+					"Status 400": true,
+					"Aponta o campo senha": true,
+					"Explica a regra da senha": true
+				}
+			]
+		},
+		{
+			"id": "faa94e3a-1523-4723-89b2-9d59c97621dd",
+			"name": "CT04 - Login válido",
+			"url": "https://api-clyvo-node.onrender.com/auth/login",
+			"time": 511,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Devolve o token": true,
+				"Usuário certo": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Devolve o token": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Usuário certo": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				511
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Devolve o token": true,
+					"Usuário certo": true
+				}
+			]
+		},
+		{
+			"id": "ae4423da-a954-4bc8-a47b-572ca0edfd76",
+			"name": "CT05 - Rota protegida sem token",
+			"url": "https://api-clyvo-node.onrender.com/consultas/agendadas",
+			"time": 153,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status 401": true,
+				"Mensagem de sessão": true
+			},
+			"testPassFailCounts": {
+				"Status 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensagem de sessão": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				153
+			],
+			"allTests": [
+				{
+					"Status 401": true,
+					"Mensagem de sessão": true
+				}
+			]
+		},
+		{
+			"id": "a3535db3-de4a-430a-82a2-f8915e48970f",
+			"name": "CT06 - Buscar paciente Thor",
+			"url": "https://api-clyvo-node.onrender.com/pacientes?busca=Thor",
+			"time": 316,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Encontrou o Thor": true,
+				"Espécie e raça certas": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Encontrou o Thor": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Espécie e raça certas": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				316
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Encontrou o Thor": true,
+					"Espécie e raça certas": true
+				}
+			]
+		},
+		{
+			"id": "4fc624af-9fb6-4c9b-ae18-d4d3e8a75af6",
+			"name": "CT07 - Criar consulta para o Thor",
+			"url": "https://api-clyvo-node.onrender.com/consultas",
+			"time": 744,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status 201": true,
+				"Mensagem de sucesso": true,
+				"Consulta agendada para o Thor": true,
+				"Lembretes gerados (antes e na hora)": true
+			},
+			"testPassFailCounts": {
+				"Status 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensagem de sucesso": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Consulta agendada para o Thor": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Lembretes gerados (antes e na hora)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				744
+			],
+			"allTests": [
+				{
+					"Status 201": true,
+					"Mensagem de sucesso": true,
+					"Consulta agendada para o Thor": true,
+					"Lembretes gerados (antes e na hora)": true
+				}
+			]
+		},
+		{
+			"id": "3a0d67f2-4bb6-4fbb-8387-bf02e08f4be8",
+			"name": "CT08 - Consulta aparece em Agendadas",
+			"url": "https://api-clyvo-node.onrender.com/consultas/agendadas?busca=Thor",
+			"time": 770,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Consulta criada está na lista": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Consulta criada está na lista": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				770
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Consulta criada está na lista": true
+				}
+			]
+		},
+		{
+			"id": "30466839-7836-4d46-8504-2cac014574b0",
+			"name": "CT09 - Concluir consulta",
+			"url": "https://api-clyvo-node.onrender.com/consultas/15",
+			"time": 486,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Consulta concluída com diagnóstico": true,
+				"Sem lembretes para consulta concluída": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Consulta concluída com diagnóstico": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Sem lembretes para consulta concluída": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				486
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Consulta concluída com diagnóstico": true,
+					"Sem lembretes para consulta concluída": true
+				}
+			]
+		},
+		{
+			"id": "fdfd8095-1a67-4c50-bca5-faca18ced945",
+			"name": "CT10 - Remover consulta",
+			"url": "https://api-clyvo-node.onrender.com/consultas/15",
+			"time": 298,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Mensagem de remoção": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensagem de remoção": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				298
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Mensagem de remoção": true
+				}
+			]
+		},
+		{
+			"id": "8614916a-06dc-475e-9278-06925a05c5b8",
+			"name": "CT11 - Consulta removida não existe mais",
+			"url": "https://api-clyvo-node.onrender.com/consultas/15",
+			"time": 277,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status 404": true,
+				"Mensagem": true
+			},
+			"testPassFailCounts": {
+				"Status 404": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Mensagem": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				277
+			],
+			"allTests": [
+				{
+					"Status 404": true,
+					"Mensagem": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 4962,
+	"collection": {
+		"requests": [
+			{
+				"id": "855bab5a-d2f7-476d-962b-e7560eb69bca",
+				"method": "GET"
+			},
+			{
+				"id": "31804681-797b-4de7-a92f-5ecdf02c517a",
+				"method": "POST"
+			},
+			{
+				"id": "1eb6b0c3-dca1-4d08-8c11-fd493bc473bd",
+				"method": "POST"
+			},
+			{
+				"id": "faa94e3a-1523-4723-89b2-9d59c97621dd",
+				"method": "POST"
+			},
+			{
+				"id": "ae4423da-a954-4bc8-a47b-572ca0edfd76",
+				"method": "GET"
+			},
+			{
+				"id": "a3535db3-de4a-430a-82a2-f8915e48970f",
+				"method": "GET"
+			},
+			{
+				"id": "4fc624af-9fb6-4c9b-ae18-d4d3e8a75af6",
+				"method": "POST"
+			},
+			{
+				"id": "3a0d67f2-4bb6-4fbb-8387-bf02e08f4be8",
+				"method": "GET"
+			},
+			{
+				"id": "30466839-7836-4d46-8504-2cac014574b0",
+				"method": "PUT"
+			},
+			{
+				"id": "fdfd8095-1a67-4c50-bca5-faca18ced945",
+				"method": "DELETE"
+			},
+			{
+				"id": "8614916a-06dc-475e-9278-06925a05c5b8",
+				"method": "GET"
+			}
+		]
+	}
+}
